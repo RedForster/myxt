@@ -1,158 +1,193 @@
-# Phaser Vite TypeScript Template
+# Immune Tower Defense (免疫塔防)
 
-This is a Phaser 3 project template that uses Vite for bundling. It supports hot-reloading for quick development workflow, includes TypeScript support and scripts to generate production-ready builds.
+A 2D tower defense game that simulates the human immune system, built with Phaser 3 and TypeScript. Deploy immune cells as towers to defend against pathogens and protect your immune organ!
 
-**[This Template is also available as a JavaScript version.](https://github.com/phaserjs/template-vite)**
+![Game Screenshot](screenshot.png)
 
-### Versions
+## 🎮 Game Overview
 
-This template has been updated for:
+**Immune Tower Defense** is an educational tower defense game where players take on the role of the immune system, strategically placing different types of immune cells to defend against invading pathogens.
 
-- [Phaser 3.90.0](https://github.com/phaserjs/phaser)
-- [Vite 6.3.1](https://github.com/vitejs/vite)
-- [TypeScript 5.7.2](https://github.com/microsoft/TypeScript)
+### 🎯 Game Features
 
-![screenshot](screenshot.png)
+- **Immersive Theme**: Experience the human immune system through engaging tower defense gameplay
+- **Multiple Tower Types**: Deploy Neutrophils, B-cells, T-cells, and Macrophages (unlock progressively)
+- **Resource Management**: Generate resources from your immune organ to build and upgrade defenses
+- **Wave System**: Survive increasingly challenging waves of pathogens for 120 seconds
+- **Progressive Unlocking**: New tower types become available as you progress
 
-## Requirements
+### 🎮 Gameplay
 
-[Node.js](https://nodejs.org) is required to install dependencies and run scripts via `npm`.
+1. **Build Phase**: Spend resources to place immune cell towers in strategic positions
+2. **Defense Phase**: Towers automatically target and attack enemies within range
+3. **Survival**: Prevent pathogens from reaching your immune organ for 120 seconds
+4. **Victory**: Survive all waves with your health intact!
 
-## Available Commands
+## 🚀 Quick Start
 
-| Command | Description |
-|---------|-------------|
-| `npm install` | Install project dependencies |
-| `npm run dev` | Launch a development web server |
-| `npm run build` | Create a production build in the `dist` folder |
-| `npm run dev-nolog` | Launch a development web server without sending anonymous data (see "About log.js" below) |
-| `npm run build-nolog` | Create a production build in the `dist` folder without sending anonymous data (see "About log.js" below) |
+### Prerequisites
 
-## Writing Code
+- [Node.js](https://nodejs.org) (v16 or higher)
+- npm or yarn package manager
 
-After cloning the repo, run `npm install` from your project directory. Then, you can start the local development server by running `npm run dev`.
-
-The local development server runs on `http://localhost:8080` by default. Please see the Vite documentation if you wish to change this, or add SSL support.
-
-Once the server is running you can edit any of the files in the `src` folder. Vite will automatically recompile your code and then reload the browser.
-
-## Template Project Structure
-
-We have provided a default project structure to get you started. This is as follows:
-
-## Template Project Structure
-
-We have provided a default project structure to get you started:
-
-| Path                         | Description                                                |
-|------------------------------|------------------------------------------------------------|
-| `index.html`                 | A basic HTML page to contain the game.                     |
-| `public/assets`              | Game sprites, audio, etc. Served directly at runtime.      |
-| `public/style.css`           | Global layout styles.                                      |
-| `src/main.ts`                | Application bootstrap.                                     |
-| `src/game`                   | Folder containing the game code.                           |
-| `src/game/main.ts`           | Game entry point: configures and starts the game.          |
-| `src/game/scenes`            | Folder with all Phaser game scenes.                        | 
-
-
-## Handling Assets
-
-Vite supports loading assets via JavaScript module `import` statements.
-
-This template provides support for both embedding assets and also loading them from a static folder. To embed an asset, you can import it at the top of the JavaScript file you are using it in:
-
-```js
-import logoImg from './assets/logo.png'
-```
-
-To load static files such as audio files, videos, etc place them into the `public/assets` folder. Then you can use this path in the Loader calls within Phaser:
-
-```js
-preload ()
-{
-    //  This is an example of an imported bundled image.
-    //  Remember to import it at the top of this file
-    this.load.image('logo', logoImg);
-
-    //  This is an example of loading a static image
-    //  from the public/assets folder:
-    this.load.image('background', 'assets/bg.png');
-}
-```
-
-When you issue the `npm run build` command, all static assets are automatically copied to the `dist/assets` folder.
-
-## Deploying to Production
-
-After you run the `npm run build` command, your code will be built into a single bundle and saved to the `dist` folder, along with any other assets your project imported, or stored in the public assets folder.
-
-In order to deploy your game, you will need to upload *all* of the contents of the `dist` folder to a public facing web server.
-
-## Customizing the Template
-
-### Vite
-
-If you want to customize your build, such as adding plugin (i.e. for loading CSS or fonts), you can modify the `vite/config.*.mjs` file for cross-project changes, or you can modify and/or create new configuration files and target them in specific npm tasks inside of `package.json`. Please see the [Vite documentation](https://vitejs.dev/) for more information.
-
-## About log.js
-
-If you inspect our node scripts you will see there is a file called `log.js`. This file makes a single silent API call to a domain called `gryzor.co`. This domain is owned by Phaser Studio Inc. The domain name is a homage to one of our favorite retro games.
-
-We send the following 3 pieces of data to this API: The name of the template being used (vue, react, etc). If the build was 'dev' or 'prod' and finally the version of Phaser being used.
-
-At no point is any personal data collected or sent. We don't know about your project files, device, browser or anything else. Feel free to inspect the `log.js` file to confirm this.
-
-Why do we do this? Because being open source means we have no visible metrics about which of our templates are being used. We work hard to maintain a large and diverse set of templates for Phaser developers and this is our small anonymous way to determine if that work is actually paying off, or not. In short, it helps us ensure we're building the tools for you.
-
-However, if you don't want to send any data, you can use these commands instead:
-
-Dev:
+### Installation
 
 ```bash
-npm run dev-nolog
+# Clone the repository
+git clone https://github.com/your-username/myxt.git
+cd myxt
+
+# Install dependencies
+npm install
 ```
 
-Build:
+### Development
 
 ```bash
+# Start development server (hot-reload enabled)
+npm run dev
+
+# Game will be available at http://localhost:8080
+```
+
+### Production Build
+
+```bash
+# Create optimized production build
+npm run build
+
+# Build without analytics
 npm run build-nolog
 ```
 
-Or, to disable the log entirely, simply delete the file `log.js` and remove the call to it in the `scripts` section of `package.json`:
+## 🏗️ Project Structure
 
-Before:
-
-```json
-"scripts": {
-    "dev": "node log.js dev & dev-template-script",
-    "build": "node log.js build & build-template-script"
-},
+```
+myxt/
+├── src/
+│   ├── game/
+│   │   ├── scenes/           # Phaser game scenes
+│   │   │   ├── Boot.ts      # Initial setup
+│   │   │   ├── Preloader.ts # Asset loading
+│   │   │   ├── GameScene.ts # Main game logic
+│   │   │   └── UIScene.ts   # UI management
+│   │   ├── entities/        # Game entities
+│   │   │   ├── Entity.ts    # Base entity class
+│   │   │   ├── Tower.ts     # Tower classes
+│   │   │   ├── Enemy.ts     # Enemy classes
+│   │   │   ├── Projectile.ts # Projectile system
+│   │   │   └── ImmuneOrgan.ts # Player base
+│   │   ├── config/          # Game configuration
+│   │   │   ├── LevelConfig.ts # Wave patterns, timing
+│   │   │   └── UnitsConfig.ts  # Unit stats and costs
+│   │   └── main.ts          # Game configuration
+│   └── main.ts              # Application bootstrap
+├── assets/                  # Game assets (sprites, textures)
+├── public/                  # Static assets
+├── docs/                    # Documentation
+├── vite/                    # Vite configuration
+└── dist/                    # Production build output
 ```
 
-After:
+## 🎯 Game Mechanics
 
-```json
-"scripts": {
-    "dev": "dev-template-script",
-    "build": "build-template-script"
-},
+### Tower Types
+
+| Tower | Description | Unlock Time |
+|-------|-------------|--------------|
+| **Neutrophil** | Fast-attacking basic defender | Start |
+| **B-cell** | Ranged attacker with antibodies | 30 seconds |
+| **T-cell** | Specialized targeting system | 60 seconds |
+| **Macrophage** | Heavy damage, large area effect | 90 seconds |
+
+### Resource System
+
+- **Immune Organ**: Generates resources over time
+- **Tower Costs**: Each tower type has different resource requirements
+- **Health**: Decreases when enemies reach the right side
+
+### Combat System
+
+- **Auto-targeting**: Towers automatically engage enemies within range
+- **Slot-based Targeting**: Each tower can target multiple enemies simultaneously
+- **Projectile System**: Object pooling for optimal performance
+- **Damage Types**: Different towers have unique attack patterns
+
+## 🛠️ Development
+
+### Architecture
+
+The game uses a **hybrid architecture** combining:
+- **Phaser Scene System** for state management
+- **Entity-Component pattern** for game objects
+- **Event-driven communication** between systems
+
+### Key Systems
+
+- **Resource Management**: Real-time resource generation and spending
+- **Wave Spawning**: Timed enemy waves with increasing difficulty
+- **Targeting AI**: Smart enemy selection and engagement
+- **UI Integration**: Real-time updates for resources and health
+
+### Customization
+
+#### Adding New Towers
+
+1. Create new tower class in `src/game/entities/Tower.ts`
+2. Add configuration to `src/game/config/UnitsConfig.ts`
+3. Update UI in `src/game/scenes/UIScene.ts`
+
+#### Modifying Waves
+
+Edit `src/game/config/LevelConfig.ts` to adjust:
+- Enemy spawn rates
+- Wave timing
+- Difficulty progression
+
+## 🎨 Assets
+
+### Game Assets
+
+- **Character Sprites**: Immune cells and pathogens in `assets/unit/`
+- **Environment**: Stage backgrounds and barriers in `assets/stage/`
+- **UI Elements**: Interface components in `assets/UI/`
+
+### Asset Loading
+
+- **Bundled Assets**: Imported via ES modules for small files
+- **Static Assets**: Loaded from `public/assets/` at runtime
+
+## 📦 Deployment
+
+```bash
+# Build for production
+npm run build
+
+# Deploy contents of dist/ folder to your web server
 ```
 
-Either of these will stop `log.js` from running. If you do decide to do this, please could you at least join our Discord and tell us which template you're using! Or send us a quick email. Either will be super-helpful, thank you.
+## 🤝 Contributing
 
-## Join the Phaser Community!
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-We love to see what developers like you create with Phaser! It really motivates us to keep improving. So please join our community and show-off your work 😄
+## 📄 License
 
-**Visit:** The [Phaser website](https://phaser.io) and follow on [Phaser Twitter](https://twitter.com/phaser_)<br />
-**Play:** Some of the amazing games [#madewithphaser](https://twitter.com/search?q=%23madewithphaser&src=typed_query&f=live)<br />
-**Learn:** [API Docs](https://newdocs.phaser.io), [Support Forum](https://phaser.discourse.group/) and [StackOverflow](https://stackoverflow.com/questions/tagged/phaser-framework)<br />
-**Discord:** Join us on [Discord](https://discord.gg/phaser)<br />
-**Code:** 2000+ [Examples](https://labs.phaser.io)<br />
-**Read:** The [Phaser World](https://phaser.io/community/newsletter) Newsletter<br />
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-Created by [Phaser Studio](mailto:support@phaser.io). Powered by coffee, anime, pixels and love.
+## 🙏 Acknowledgments
 
-The Phaser logo and characters are &copy; 2011 - 2025 Phaser Studio Inc.
+- Built with [Phaser 3](https://phaser.io/) - The awesome HTML5 game framework
+- Powered by [Vite](https://vitejs.dev/) - Next generation frontend tooling
+- TypeScript for type-safe development
 
-All rights reserved.
+## 🎮 Play Online
+
+[Demo Link Coming Soon] - Experience the immune defense battle in your browser!
+
+---
+
+**Made with ❤️ for educational gaming and immune system awareness**
