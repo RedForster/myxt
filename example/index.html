@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>免疫系统塔防</title>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+    <style>
+        body { margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #1a1a1a; }
+        canvas { display: block; max-width: 100%; max-height: 100vh; object-fit: contain; }
+    </style>
+</head>
+<body>
+    <script type="module">
+        // =================================================================
+        // 游戏配置数据 (Game Configuration Data)
+        // =================================================================
+
+        const UNITS_CONFIG = {
+          "towers": {
+            "t_01": { "id": "t_01", "name": "嗜中性白血球", "texture": "tower_0", "cost": 15, "hp": 30, "damage": 15, "range": 200, "fireRate": 800, "projectileSpeed": 1200, "attractionSlots": 3 },
+            "t_02": { "id": "t_02", "name": "B细胞", "texture": "tower_1", "cost": 20, "hp": 50, "damage": 30, "range": 350, "fireRate": 600, "projectileSpeed": 1200, "attractionSlots": 3 },
+            "t_03": { "id": "t_03", "name": "T细胞", "texture": "tower_2", "cost": 40, "hp": 80, "damage": 20, "range": 150, "fireRate": 300, "projectileSpeed": 1500, "attractionSlots": 3 },
+            "t_04": { "id": "t_04", "name": "巨噬细胞", "texture": "tower_3", "cost": 50, "hp": 150, "damage": 80, "range": 300, "fireRate": 1000, "projectileSpeed": 1000, "attractionSlots": 3 },
+            "t_05": { "id": "t_05", "name": "单元5", "texture": "tower_4", "cost": 60, "hp": 220, "damage": 55, "range": 220, "fireRate": 600, "projectileSpeed": 1200, "attractionSlots": 3 },
+            "t_06": { "id": "t_06", "name": "单元6", "texture": "tower_5", "cost": 70, "hp": 180, "damage": 45, "range": 180, "fireRate": 400, "projectileSpeed": 1200, "attractionSlots": 3 },
+            "t_07": { "id": "t_07", "name": "单元7", "texture": "tower_6", "cost": 80, "hp": 350, "damage": 150, "range": 350, "fireRate": 1200, "projectileSpeed": 1000, "attractionSlots": 3 },
+            "t_08": { "id": "t_08", "name": "单元8", "texture": "tower_7", "cost": 100, "hp": 280, "damage": 100, "range": 280, "fireRate": 800, "projectileSpeed": 1200, "attractionSlots": 3 }
+          },
+          "enemies": {
+            "e_01": { "id": "e_01", "name": "普通病菌", "texture": "enemy", "hp": 60, "speed": 80, "reward": 5, "damage": 15, "attackRange": 50, "fireRate": 1000, "damageToOrgan": 15, "targetedBySlots": 3 }
+          },
+          "fixed": {
+            "organ_01": {
+              "id": "organ_01",
+              "name": "免疫器官",
+              "texture": "organ",
+              "initialLevel": 1,
+              "maxLevel": 5,
+              "upgradeCost": 40,
+              "baseHp": 50,
+              "hpPerLevel": 25,
+              "baseResourceGen": 5,
+              "resourceGenPerLevel": 2,
+              "attractionSlots": 5
+            }
+          }
+        };
+
+        const LEVELS_CONFIG = {
+          "level_1": {
+            "name": "Demo关卡",
+            "initialResources": 40,
+            "initialEnemies": {
+              "count": 5,
+              "enemyType": "e_01"
+            },
+            "waves": [
+              { "startTime": 0, "endTime": 60, "interval": 1000, "enemyType": "e_01" },
+              { "startTime": 60, "endTime": 120, "interval": 700, "enemyType": "e_01" }
+            ],
+            "towerUnlocks": [
+              { "time": 0, "towerId": "t_01" }, { "time": 15, "towerId": "t_02" },
+              { "time": 30, "towerId": "t_03" }, { "time": 45, "towerId": "t_04" },
+              { "time": 60, "towerId": "t_05" }, { "time": 75, "towerId": "t_06" },
+              { "time": 90, "towerId": "t_07" }, { "time": 105, "towerId": "t_08" }
+            ],
+            "skills": {
+              "sneeze": { "name": "喷嚏", "cooldown": 20000, "damage": 20 }
+            }
+          }
+        };
+
+
+        // =================================================================
+        // 实体类定义 (Entities)
+        // =================================================================
+
+        class Projectile extends Phaser.Physics.Arcade.Sprite {
+            constructor(scene, x, y) {
+                super(scene, x, y, 'projectile');
+                this.speed = 1200;
+                this.damage = 0;
+            }
+
+            fire(target, damage, speed) {
+                this.damage = damage;
+                this.speed = speed;
+                this.setActive(true).setVisible(true);
+                this.body.setCircle(this.width / 2);
+                this.scene.physics.moveToObject(this, target, this.speed);
+            }
+            
+            update(time, delta) {
+                if (!this.scene || !this.body) return;
+                if (this.y < -50 || this.y > this.scene.scale.height + 50 || this.x < -50 || this.x > this.scene.scale.width + 50) {
+                    this.setActive(false).setVisible(false).destroy();
+                }
+            }
+        }
+
+        class Tower extends Phaser.GameObjects.Sprite {
+            constructor(scene, x, y, towerData) {
+                super(scene, x, y, towerData.texture);
+                this.scene.add.existing(this);
+                this.scene.physics.world.enable(this);
+                this.body.setCircle(this.width / 2);
+
+                this.config = towerData;
+                this.hp = this.config.hp;
+                this.maxHp = this.config.hp;
+                this.attackRange = this.config.range;
+                this.fireRate = this.config.fireRate;
+                this.damage = this.config.damage;
+                this.projectileSpeed = this.config.projectileSpeed;
+                this.nextFire = 0;
+                this.target = null;
+                this.attackers = new Set();
+                this.nextSearch = 0;
+                
+                this.rangeIndicator = scene.add.graphics().lineStyle(2, 0x3498db, 0.3).strokeCircle(this.x, this.y, this.attackRange);
+                this.healthBar = scene.add.graphics();
+                this.updateHealthBar();
+            }
+
+            update(time, delta) {
+                if (this.target && (!this.target.active || Phaser.Math.Distance.Between(this.x, this.y, this.target.x, this.target.y) > this.attackRange)) {
+                    this.target.removeTargetedBy(this);
+                    this.target = null;
+                }
+
+                if (!this.target && time > this.nextSearch) {
+                    console.time('Tower search'); // ** 诊断日志 **
+                    this.findTarget();
+                    console.timeEnd('Tower search'); // ** 诊断日志 **
+                    this.nextSearch = time + 250;
+                }
+
+                if (this.target && time > this.nextFire) {
+                    this.fire();
+                    this.nextFire = time + this.fireRate;
+                }
+                this.updateHealthBar();
+            }
+
+            findTarget() {
+                let closestEnemy = null;
+                let closestDistance = this.attackRange;
+                this.scene.enemies.getChildren().forEach(enemy => {
+                    if (enemy.active && enemy.targetedBy.size < enemy.config.targetedBySlots) {
+                        const distance = Phaser.Math.Distance.Between(this.x, this.y, enemy.x, enemy.y);
+                        if (distance < closestDistance) {
+                            closestDistance = distance;
+                            closestEnemy = enemy;
+                        }
+                    }
+                });
+                
+                if (closestEnemy) {
+                    this.target = closestEnemy;
+                    this.target.addTargetedBy(this);
+                }
+            }
+            
+            fire() {
+                const projectile = new Projectile(this.scene, this.x, this.y);
+                this.scene.projectiles.add(projectile, true);
+                projectile.fire(this.target, this.damage, this.projectileSpeed);
+            }
+
+            receiveDamage(damage) {
+                this.hp -= damage;
+                this.updateHealthBar();
+                if (this.hp <= 0) {
+                    this.destroy();
+                }
+            }
+            
+            updateHealthBar() {
+                this.healthBar.clear();
+                const x = this.x - this.width / 2;
+                const y = this.y - this.height / 2 - 15;
+                this.healthBar.fillStyle(0x000000, 0.7).fillRect(x, y, this.width, 10);
+                this.healthBar.fillStyle(0x2ecc71).fillRect(x, y, this.width * (this.hp / this.maxHp), 10);
+            }
+            
+            addAttacker(enemy) { this.attackers.add(enemy); }
+            removeAttacker(enemy) { this.attackers.delete(enemy); }
+            
+            destroy(fromScene) {
+                if (this.target && this.target.active) {
+                    this.target.removeTargetedBy(this);
+                }
+                this.attackers.forEach(enemy => {
+                    if (enemy.active) {
+                        enemy.targetTower = null;
+                    }
+                });
+                this.rangeIndicator.destroy();
+                this.healthBar.destroy();
+                this.scene.updateAllTargetsList(); // ** 性能优化: 通知场景更新目标列表 **
+                super.destroy(fromScene);
+            }
+        }
+
+        class Enemy extends Phaser.Physics.Arcade.Sprite {
+            constructor(scene, x, y, enemyData) {
+                super(scene, x, y, enemyData.texture);
+                this.scene.add.existing(this);
+                this.scene.physics.world.enable(this);
+                this.body.setCircle(this.width / 2);
+
+                this.config = enemyData;
+                this.hp = this.config.hp;
+                this.reward = this.config.reward;
+                this.state = 'moving';
+                this.targetTower = null;
+                this.nextAttack = 0;
+                this.targetedBy = new Set();
+                this.nextSearch = 0;
+                
+                this.healthBar = this.scene.add.graphics();
+                this.updateHealthBar();
+            }
+
+            update(time, delta) {
+                this.updateHealthBar();
+                if (!this.active) return;
+
+                if ((!this.targetTower || !this.targetTower.active) && time > this.nextSearch) {
+                    console.time('Enemy search'); // ** 诊断日志 **
+                    this.retarget();
+                    console.timeEnd('Enemy search'); // ** 诊断日志 **
+                    this.nextSearch = time + 500;
+                }
+
+                if (this.state === 'moving' && this.targetTower) {
+                    this.scene.physics.moveToObject(this, this.targetTower, this.config.speed);
+                    const distance = Phaser.Math.Distance.Between(this.x, this.y, this.targetTower.x, this.targetTower.y);
+                    if (distance <= this.config.attackRange) {
+                        this.state = 'attacking';
+                        this.body.setVelocity(0, 0);
+                    }
+                } else if (this.state === 'attacking') {
+                    this.attackTarget(time);
+                }
+            }
+
+            retarget() {
+                if (this.targetTower && this.targetTower.removeAttacker) {
+                    this.targetTower.removeAttacker(this);
+                }
+                this.findTarget();
+                if (this.targetTower) {
+                    this.state = 'moving';
+                } else {
+                    this.targetTower = this.scene.organ;
+                    this.state = 'moving';
+                }
+            }
+
+            findTarget() {
+                let closestTarget = null;
+                let closestDistance = Infinity;
+                // ** 性能优化: 使用场景中缓存的目标列表 **
+                const potentialTargets = this.scene.allTargets;
+                console.log(`Enemy checking ${potentialTargets.length} targets`); // ** 诊断日志 **
+
+                for (const target of potentialTargets) {
+                    if (target.active && target.attackers.size < target.config.attractionSlots) {
+                        const distance = Phaser.Math.Distance.Between(this.x, this.y, target.x, target.y);
+                        if (distance < closestDistance) {
+                            closestDistance = distance;
+                            closestTarget = target;
+                        }
+                    }
+                }
+
+                if (closestTarget) {
+                    this.targetTower = closestTarget;
+                    this.targetTower.addAttacker(this);
+                } else {
+                    this.targetTower = this.scene.organ;
+                }
+            }
+
+            attackTarget(time) {
+                if (time > this.nextAttack) {
+                    if (this.targetTower.receiveDamage) {
+                        this.targetTower.receiveDamage(this.config.damage);
+                    }
+                    this.nextAttack = time + this.config.fireRate;
+                }
+            }
+
+            receiveDamage(damage) {
+                this.hp -= damage;
+                this.updateHealthBar();
+                if (this.hp <= 0 && this.active) {
+                    this.setActive(false);
+                    this.scene.events.emit('enemyDefeated', { reward: this.reward });
+                    this.destroy();
+                }
+            }
+
+            addTargetedBy(tower) { this.targetedBy.add(tower); }
+            removeTargetedBy(tower) { this.targetedBy.delete(tower); }
+            
+            updateHealthBar() {
+                this.healthBar.clear();
+                const x = this.x - 25;
+                const y = this.y - 40;
+                this.healthBar.fillStyle(0xff0000).fillRect(x, y, 50, 8);
+                this.healthBar.fillStyle(0x00ff00).fillRect(x, y, 50 * (this.hp / this.config.hp), 8);
+            }
+
+            destroy(fromScene) {
+                if (this.targetTower && this.targetTower.active && this.targetTower.removeAttacker) {
+                    this.targetTower.removeAttacker(this);
+                }
+                this.targetedBy.forEach(tower => {
+                    if (tower.active) tower.target = null;
+                });
+                this.healthBar.destroy();
+                super.destroy(fromScene);
+            }
+        }
+        
+        class Organ extends Phaser.Physics.Arcade.Sprite {
+            constructor(scene, x, y, organData) {
+                super(scene, x, y, organData.texture);
+                this.scene.add.existing(this);
+                this.scene.physics.world.enable(this);
+                this.setImmovable(true);
+                this.body.setCircle(this.width / 2);
+
+                this.config = organData;
+                this.level = this.config.initialLevel;
+                this.maxHp = this.calculateMaxHp();
+                this.hp = this.maxHp;
+                this.attackers = new Set();
+            }
+
+            calculateMaxHp() {
+                return this.config.baseHp + this.config.hpPerLevel * (this.level - 1);
+            }
+
+            calculateResourceGen() {
+                return this.config.baseResourceGen + this.config.resourceGenPerLevel * (this.level - 1);
+            }
+
+            upgrade() {
+                if (this.level < this.config.maxLevel) {
+                    this.level++;
+                    this.maxHp = this.calculateMaxHp();
+                    this.hp = this.maxHp; 
+                    this.scene.events.emit('organUpgraded', { level: this.level, hp: this.hp, maxHp: this.maxHp });
+                    return true;
+                }
+                return false;
+            }
+
+            receiveDamage(damage) {
+                this.hp -= damage;
+                this.scene.events.emit('organDamaged', { hp: this.hp, maxHp: this.maxHp });
+                if (this.hp <= 0) {
+                    this.hp = 0;
+                    this.scene.events.emit('gameOver');
+                }
+            }
+            
+            addAttacker(enemy) { this.attackers.add(enemy); }
+            removeAttacker(enemy) { this.attackers.delete(enemy); }
+        }
+
+        // =================================================================
+        // 场景类定义 (Scenes)
+        // =================================================================
+
+        class PreloaderScene extends Phaser.Scene {
+            constructor() { super('PreloaderScene'); }
+
+            preload() {
+                const { width, height } = this.scale;
+                this.add.text(width / 2, height / 2, '正在加载资源...', { fontSize: '48px', fill: '#fff' }).setOrigin(0.5);
+                
+                this.load.image('background', 'https://placehold.co/1920x1080/600815/FFFFFF?text=游戏背景');
+
+                const createTexture = (name, width, height, graphicsCallback) => {
+                    const g = this.make.graphics({x:0, y:0}, false);
+                    graphicsCallback(g);
+                    g.generateTexture(name, width, height);
+                    g.destroy();
+                };
+                
+                createTexture('enemy', 48, 48, g => g.fillStyle(0x2ecc71).fillCircle(24, 24, 24).lineStyle(3, 0xffffff).strokeCircle(24,24,24));
+                createTexture('projectile', 16, 16, g => g.fillStyle(0xf1c40f).fillCircle(8, 8, 8));
+                const towerColors = [0x3498db, 0x9b59b6, 0xe74c3c, 0xf1c40f, 0x1abc9c, 0x2c3e50, 0x7f8c8d, 0xd35400];
+                towerColors.forEach((color, i) => createTexture(`tower_${i}`, 64, 64, g => g.fillStyle(color).fillCircle(32, 32, 32)));
+                createTexture('organ', 128, 128, g => g.fillStyle(0xff69b4).fillCircle(64,64,60).lineStyle(6, 0xff1493).strokeCircle(64,64,60));
+                createTexture('icon_health', 48, 48, g => g.fillStyle(0xe74c3c).fillCircle(24, 24, 24));
+                createTexture('icon_pause', 48, 48, g => g.fillStyle(0xffffff).fillRect(10,8,12,32).fillRect(28,8,12,32));
+                createTexture('icon_exit', 48, 48, g => g.lineStyle(6, 0xffffff).strokeCircle(24,24,20).lineBetween(12,12,36,36));
+                createTexture('icon_sneeze', 96, 96, g => g.fillStyle(0x1abc9c).fillCircle(48,48,45));
+                createTexture('npc_avatar', 96, 96, g => g.fillStyle(0xffffff).fillEllipse(48,48,45,40).fillStyle(0x000000).fillCircle(35,40,5).fillCircle(61,40,5));
+            }
+
+            create() {
+                this.scene.start('GameScene');
+                this.scene.start('UIScene');
+            }
+        }
+        
+        class GameScene extends Phaser.Scene {
+            constructor() {
+                super('GameScene');
+                this.selectedTowerData = null;
+                this.placementIndicator = null;
+                this.gameWidth = 1920 * 0.75;
+                this.levelData = null;
+                this.unitData = null;
+                this.waveTimers = [];
+                this.organ = null;
+                this.allTargets = []; // ** 性能优化: 缓存目标列表 **
+            }
+
+            create() {
+                this.levelData = LEVELS_CONFIG.level_1;
+                this.unitData = UNITS_CONFIG;
+
+                this.add.image(this.gameWidth/2, this.scale.height/2, 'background').setDepth(-1).setCrop(0,0,this.gameWidth, this.scale.height);
+                
+                this.towers = this.add.group({ classType: Tower, runChildUpdate: true });
+                this.organ = new Organ(this, this.gameWidth - 180, this.scale.height / 2, this.unitData.fixed.organ_01);
+                this.updateAllTargetsList();
+                
+                this.enemies = this.physics.add.group({ classType: Enemy, runChildUpdate: true });
+                this.projectiles = this.physics.add.group({ classType: Projectile, runChildUpdate: true });
+                
+                this.physics.add.overlap(this.projectiles, this.enemies, this.handleProjectileHit, null, this);
+
+                if (this.levelData.initialEnemies) {
+                    for (let i = 0; i < this.levelData.initialEnemies.count; i++) {
+                        this.time.delayedCall(i * 400, () => {
+                             this.spawnEnemy(this.levelData.initialEnemies.enemyType);
+                        });
+                    }
+                }
+
+                this.levelData.waves.forEach(wave => {
+                    const timer = this.time.addEvent({
+                        delay: wave.interval,
+                        callback: () => {
+                            const gameTimeInSeconds = this.time.now / 1000;
+                            if (gameTimeInSeconds >= wave.startTime && gameTimeInSeconds <= wave.endTime) {
+                                this.spawnEnemy(wave.enemyType);
+                            }
+                        },
+                        callbackScope: this,
+                        loop: true
+                    });
+                    this.waveTimers.push(timer);
+                });
+
+                this.input.on('pointerdown', this.handlePlacement, this);
+                this.input.on('pointermove', this.updatePlacementIndicator, this);
+                
+                const uiScene = this.scene.get('UIScene');
+                uiScene.events.on('selectTower', this.onSelectTower, this);
+                uiScene.events.on('useSneezeSkill', this.onUseSneezeSkill, this);
+                
+                this.events.on('attackOrgan', (damage) => this.organ.receiveDamage(damage), this);
+                this.events.on('gameOver', () => this.scene.pause());
+            }
+
+            // ** 性能优化: 更新目标列表的方法 **
+            updateAllTargetsList() {
+                this.allTargets = [...this.towers.getChildren(), this.organ];
+            }
+            
+            onSelectTower(towerData) {
+                this.selectedTowerData = towerData;
+                if (!this.placementIndicator) {
+                    this.placementIndicator = this.add.container(0,0);
+                    const circle = this.add.circle(0, 0, 0, 0x3498db, 0.3);
+                    const sprite = this.add.sprite(0, 0, 'tower_0').setAlpha(0.7);
+                    this.placementIndicator.add([circle, sprite]);
+                }
+                this.placementIndicator.getAt(0).setRadius(this.selectedTowerData.range);
+                this.placementIndicator.getAt(1).setTexture(this.selectedTowerData.texture);
+                this.placementIndicator.setVisible(true);
+            }
+
+            onUseSneezeSkill() {
+                const damage = this.levelData.skills.sneeze.damage;
+                this.enemies.getChildren().forEach(enemy => {
+                    if (enemy.active) enemy.receiveDamage(damage);
+                });
+            }
+
+            updatePlacementIndicator(pointer) {
+                if (this.selectedTowerData && this.placementIndicator) {
+                    this.placementIndicator.setPosition(pointer.x, pointer.y);
+                    const canPlace = pointer.x < this.gameWidth && this.scene.get('UIScene').playerResources >= this.selectedTowerData.cost;
+                    this.placementIndicator.getAt(1).setTint(canPlace ? 0xffffff : 0xff0000);
+                }
+            }
+
+            handleProjectileHit(projectile, enemy) {
+                if(enemy?.active && enemy.receiveDamage) enemy.receiveDamage(projectile.damage);
+                projectile.destroy();
+            }
+
+            spawnEnemy(enemyType) {
+                const enemyData = this.unitData.enemies[enemyType];
+                const x = -50;
+                const y = Phaser.Math.Between(100, this.scale.height - 100);
+                const enemy = new Enemy(this, x, y, enemyData);
+                this.enemies.add(enemy, true);
+                enemy.retarget();
+            }
+
+            handlePlacement(pointer) {
+                if (pointer.x > this.gameWidth) {
+                    this.selectedTowerData = null;
+                    if(this.placementIndicator) this.placementIndicator.setVisible(false);
+                    return;
+                }
+                if (!this.selectedTowerData) return;
+                const uiScene = this.scene.get('UIScene');
+                if (uiScene.playerResources >= this.selectedTowerData.cost) {
+                    const tower = new Tower(this, pointer.x, pointer.y, this.selectedTowerData);
+                    this.towers.add(tower);
+                    this.updateAllTargetsList(); // ** 性能优化: 部署新塔后更新列表 **
+                    uiScene.events.emit('spendResources', this.selectedTowerData.cost);
+                    this.selectedTowerData = null; 
+                    if(this.placementIndicator) this.placementIndicator.setVisible(false);
+                }
+            }
+        }
+
+        class UIScene extends Phaser.Scene {
+            constructor() { super({ key: 'UIScene', active: false }); }
+
+            create() {
+                this.levelData = LEVELS_CONFIG.level_1;
+                this.unitData = UNITS_CONFIG;
+                this.gameScene = this.scene.get('GameScene');
+                this.organ = this.gameScene.organ;
+                
+                this.playerResources = this.levelData.initialResources;
+                this.towerButtons = {};
+                this.isGameOver = false;
+
+                this.levelDuration = this.levelData.waves.reduce((max, wave) => Math.max(max, wave.endTime), 0);
+
+                const { width, height } = this.scale;
+                this.createRightPanel(width, height);
+                this.createTopLeftControls(width, height);
+                this.createBottomLeftControls(width, height);
+                this.createDialogueSystem(width, height);
+                
+                this.gameScene.events.on('organDamaged', (data) => this.updateHealthBar(data.hp, data.maxHp), this);
+                this.gameScene.events.on('organUpgraded', (data) => {
+                    this.updateHealthBar(data.hp, data.maxHp);
+                    this.organLevelText.setText(`器官等级: ${data.level}`);
+                    if (data.level >= this.organ.config.maxLevel) {
+                        this.upgradeButton.disableInteractive().setAlpha(0.5);
+                        this.upgradeText.setText('已满级');
+                    }
+                }, this);
+                this.gameScene.events.on('enemyDefeated', this.onEnemyDefeated, this);
+                this.events.on('spendResources', this.onSpendResources, this);
+                
+                this.startTutorial();
+                this.initTowerUnlocks();
+                this.initResourceGeneration();
+            }
+
+            update(time, delta) {
+                if (this.isGameOver || this.gameScene.scene.isPaused()) {
+                    return;
+                }
+
+                const elapsedTime = this.gameScene.time.now / 1000;
+                const progress = Math.min(elapsedTime / this.levelDuration, 1);
+                
+                this.updateProgressBar(progress);
+
+                if (elapsedTime >= this.levelDuration) {
+                    this.checkWinCondition();
+                }
+            }
+            
+            onEnemyDefeated(data) {
+                this.playerResources += data.reward;
+                this.updateResourcesText();
+            }
+            
+            onSpendResources(cost) {
+                this.playerResources -= cost;
+                this.updateResourcesText();
+            }
+
+            createRightPanel(width, height) {
+                const panelWidth = width * 0.25;
+                const panelX = width - panelWidth;
+                const panelContainer = this.add.container(panelX, 0);
+                const panelBg = this.add.graphics().fillStyle(0x111111, 0.8).fillRect(0, 0, panelWidth, height);
+                
+                const resourceBox = this.add.graphics().fillStyle(0xc0392b).fillRoundedRect(panelWidth/2 - 125, 20, 250, 80, 20);
+                this.resourceText = this.add.text(panelWidth/2, 60, this.playerResources, { fontSize: '50px', fontStyle: 'bold', color: '#fff' }).setOrigin(0.5);
+
+                const organConfig = this.unitData.fixed.organ_01;
+                this.upgradeButton = this.add.container(panelWidth / 2, 155);
+                const upgradeBg = this.add.graphics().fillStyle(0x27ae60).fillRoundedRect(-125, -40, 250, 80, 15);
+                this.organLevelText = this.add.text(0, -15, `器官等级: ${this.organ.level}`, { fontSize: '28px', color: '#fff' }).setOrigin(0.5);
+                this.upgradeText = this.add.text(0, 20, `升级 (${organConfig.upgradeCost})`, { fontSize: '24px', color: '#fff' }).setOrigin(0.5);
+                this.upgradeButton.add([upgradeBg, this.organLevelText, this.upgradeText]).setSize(250, 80).setInteractive();
+                this.upgradeButton.on('pointerdown', () => {
+                    if (this.playerResources >= organConfig.upgradeCost && this.organ.level < organConfig.maxLevel) {
+                        this.events.emit('spendResources', organConfig.upgradeCost);
+                        this.organ.upgrade();
+                    }
+                });
+
+                const unitsContainer = this.add.container(panelWidth/2, 240);
+                const towers = Object.values(this.unitData.towers);
+                towers.forEach((data, index) => {
+                    const button = this.createUnitButton(data);
+                    const row = Math.floor(index / 2);
+                    const col = index % 2;
+                    button.setPosition(col * 200 - 100, row * 170 + 50);
+                    unitsContainer.add(button);
+                    this.towerButtons[data.id] = button;
+                    button.setVisible(false);
+                });
+
+                const sneezeSkill = this.levelData.skills.sneeze;
+                const sneezeBtn = this.add.container(panelWidth/2, height - 150);
+                const sneezeBg = this.add.graphics().fillStyle(0xc0392b).fillRoundedRect(-125, -60, 250, 120, 20);
+                const sneezeIcon = this.add.image(-80, 0, 'icon_sneeze').setScale(0.8);
+                const sneezeText = this.add.text(30, 0, sneezeSkill.name, { fontSize: '48px', fontStyle: 'bold'}).setOrigin(0.5);
+                sneezeBtn.add([sneezeBg, sneezeIcon, sneezeText]).setSize(250, 120).setInteractive();
+                sneezeBtn.on('pointerdown', () => {
+                    this.events.emit('useSneezeSkill');
+                    sneezeBtn.disableInteractive().setAlpha(0.5);
+                    this.time.delayedCall(sneezeSkill.cooldown, () => sneezeBtn.setInteractive().setAlpha(1));
+                });
+
+                panelContainer.add([panelBg, resourceBox, this.resourceText, this.upgradeButton, unitsContainer, sneezeBtn]);
+            }
+            
+            initTowerUnlocks() {
+                this.levelData.towerUnlocks.forEach(unlock => {
+                    this.time.delayedCall(unlock.time * 1000, () => {
+                        const button = this.towerButtons[unlock.towerId];
+                        if (button) button.setVisible(true);
+                    });
+                });
+            }
+
+            initResourceGeneration() {
+                this.time.addEvent({
+                    delay: 1000,
+                    loop: true,
+                    callback: () => {
+                        if (this.organ) {
+                            const resourcesGenerated = this.organ.calculateResourceGen();
+                            this.playerResources += resourcesGenerated;
+                            this.updateResourcesText();
+                        }
+                    }
+                });
+            }
+
+            createUnitButton(towerData) {
+                const btn = this.add.container(0, 0);
+                const border = this.add.graphics().lineStyle(6, 0xc0392b).strokeRect(-80, -80, 160, 160);
+                const icon = this.add.image(0, 0, towerData.texture);
+                const costText = this.add.text(-75, -75, towerData.cost, { fontSize: '28px', fontStyle: 'bold', color: '#fff', backgroundColor: '#c0392b', padding: {x:8, y:4} });
+                btn.add([border, icon, costText]).setSize(160, 160).setInteractive();
+                btn.on('pointerdown', () => {
+                    if (this.playerResources >= towerData.cost) this.events.emit('selectTower', towerData);
+                });
+                return btn;
+            }
+
+            createTopLeftControls(width, height) {
+                const container = this.add.container(60, 60);
+                const exitBtn = this.add.image(0, 0, 'icon_exit').setScale(1.2).setInteractive();
+                const pauseBtn = this.add.image(100, 0, 'icon_pause').setScale(1.2).setInteractive();
+                pauseBtn.on('pointerdown', () => {
+                   this.gameScene.scene.isPaused() ? this.gameScene.scene.resume() : this.gameScene.scene.pause();
+                });
+                container.add([exitBtn, pauseBtn]);
+            }
+
+            createBottomLeftControls(width, height) {
+                const container = this.add.container(250, height - 80);
+                this.healthBarBg = this.add.graphics().fillStyle(0x000000, 0.5).fillRoundedRect(-150, -20, 400, 40, 20);
+                this.healthBar = this.add.graphics();
+                this.updateHealthBar(this.organ.hp, this.organ.maxHp);
+                const healthIcon = this.add.image(-180, 0, 'icon_health');
+                
+                const progressBarBg = this.add.graphics().fillStyle(0x000000, 0.5).fillRoundedRect(-150, 40, 400, 40, 20);
+                this.progressBar = this.add.graphics();
+                const progressIcon = this.add.image(-180, 60, 'icon_progress');
+                container.add([this.healthBarBg, this.healthBar, healthIcon, progressBarBg, this.progressBar, progressIcon]);
+            }
+            
+            createDialogueSystem(width, height) {
+                this.dialogueContainer = this.add.container(300, height - 80).setVisible(false);
+                const avatar = this.add.image(0, 0, 'npc_avatar');
+                const bubble = this.add.graphics().fillStyle(0xffffff, 0.9).fillRoundedRect(120, -50, 500, 100, 20).beginPath().moveTo(120, -10).lineTo(100, 0).lineTo(120, 10).closePath().fillPath();
+                this.dialogueText = this.add.text(370, 0, '', { fontSize: '32px', color: '#000', wordWrap: { width: 480 } }).setOrigin(0.5);
+                this.dialogueContainer.add([avatar, bubble, this.dialogueText]);
+            }
+
+            showDialogue(text) {
+                this.dialogueText.setText(text);
+                this.dialogueContainer.setVisible(true);
+            }
+
+            hideDialogue() { this.dialogueContainer.setVisible(false); }
+            
+            startTutorial() {
+                const tutorialSteps = [
+                    { time: 1000, text: '你好！欢迎来到免疫系统的世界！' },
+                    { time: 5000, text: '点击右侧的免疫细胞来选择它们。' },
+                    { time: 9000, text: '然后在左侧的战场上点击，部署它们来消灭病菌！' },
+                    { time: 14000, text: '祝你好运！' },
+                    { time: 17000, text: null }
+                ];
+                tutorialSteps.forEach(step => {
+                    this.time.delayedCall(step.time, () => step.text ? this.showDialogue(step.text) : this.hideDialogue());
+                });
+            }
+
+            updateHealthBar(hp, maxHp) {
+                this.healthBar.clear();
+                this.healthBar.fillStyle(hp / maxHp > 0.3 ? 0x2ecc71 : 0xe74c3c).fillRoundedRect(-150, -20, 400 * (hp / maxHp), 40, 20);
+            }
+            
+            updateProgressBar(progress) {
+                this.progressBar.clear();
+                this.progressBar.fillStyle(0x9b59b6).fillRoundedRect(-150, 40, 400 * progress, 40, 20);
+            }
+            
+            updateResourcesText() { this.resourceText.setText(this.playerResources); }
+
+            checkGameOver() {
+                if (this.isGameOver) return;
+                if (this.organ.hp <= 0) {
+                    this.isGameOver = true;
+                    const { width, height } = this.scale;
+                    this.add.rectangle(width/2, height/2, width, height, 0x000000, 0.7);
+                    this.add.text(width/2, height/2, '游戏结束', { fontSize: '192px', fill: '#e74c3c', fontStyle: 'bold' }).setOrigin(0.5);
+                    this.gameScene.events.emit('gameOver');
+                }
+            }
+
+            checkWinCondition() {
+                if (this.isGameOver) return;
+                if (this.organ.hp > 0) {
+                    this.isGameOver = true;
+                    const { width, height } = this.scale;
+                    this.add.rectangle(width/2, height/2, width, height, 0x000000, 0.7);
+                    this.add.text(width/2, height/2, '胜利！', { fontSize: '192px', fill: '#2ecc71', fontStyle: 'bold' }).setOrigin(0.5);
+                    this.gameScene.events.emit('gameOver');
+                }
+            }
+        }
+
+        const config = {
+            type: Phaser.AUTO,
+            width: 1920,
+            height: 1080,
+            scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
+            parent: 'phaser-game',
+            physics: { default: 'arcade', arcade: { gravity: { y: 0 }, debug: false } },
+            scene: [PreloaderScene, GameScene, UIScene]
+        };
+
+        const game = new Phaser.Game(config);
+    </script>
+</body>
+</html>

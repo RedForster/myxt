@@ -1,0 +1,319 @@
+{
+  "version": "2.0.0",
+  "source": "project",
+  "metadata": {
+    "version": "2.0.0",
+    "description": "project 级资源注册表",
+    "createdAt": "2025-07-31T03:43:23.163Z",
+    "updatedAt": "2025-07-31T03:43:23.171Z",
+    "resourceCount": 21
+  },
+  "resources": [
+    {
+      "id": "dev-manager",
+      "source": "project",
+      "protocol": "role",
+      "name": "Dev Manager 角色",
+      "description": "专业角色，提供特定领域的专业能力",
+      "reference": "@project://.promptx/resource/role/dev-manager/dev-manager.role.md",
+      "metadata": {
+        "createdAt": "2025-07-31T03:43:23.164Z",
+        "updatedAt": "2025-07-31T03:43:23.164Z",
+        "scannedAt": "2025-07-31T03:43:23.164Z",
+        "path": "role/dev-manager/dev-manager.role.md"
+      }
+    },
+    {
+      "id": "agile-story-planning",
+      "source": "project",
+      "protocol": "execution",
+      "name": "Agile Story Planning 执行模式",
+      "description": "执行模式，定义具体的行为模式",
+      "reference": "@project://.promptx/resource/role/dev-manager/execution/agile-story-planning.execution.md",
+      "metadata": {
+        "createdAt": "2025-07-31T03:43:23.164Z",
+        "updatedAt": "2025-07-31T03:43:23.164Z",
+        "scannedAt": "2025-07-31T03:43:23.164Z",
+        "path": "role/dev-manager/execution/agile-story-planning.execution.md"
+      }
+    },
+    {
+      "id": "agile-frameworks",
+      "source": "project",
+      "protocol": "knowledge",
+      "name": "Agile Frameworks 知识库",
+      "description": "知识库，提供专业知识和信息",
+      "reference": "@project://.promptx/resource/role/dev-manager/knowledge/agile-frameworks.knowledge.md",
+      "metadata": {
+        "createdAt": "2025-07-31T03:43:23.165Z",
+        "updatedAt": "2025-07-31T03:43:23.165Z",
+        "scannedAt": "2025-07-31T03:43:23.165Z",
+        "path": "role/dev-manager/knowledge/agile-frameworks.knowledge.md"
+      }
+    },
+    {
+      "id": "project-decomposition",
+      "source": "project",
+      "protocol": "thought",
+      "name": "Project Decomposition 思维模式",
+      "description": "思维模式，指导AI的思考方式",
+      "reference": "@project://.promptx/resource/role/dev-manager/thought/project-decomposition.thought.md",
+      "metadata": {
+        "createdAt": "2025-07-31T03:43:23.165Z",
+        "updatedAt": "2025-07-31T03:43:23.165Z",
+        "scannedAt": "2025-07-31T03:43:23.165Z",
+        "path": "role/dev-manager/thought/project-decomposition.thought.md"
+      }
+    },
+    {
+      "id": "game-testing-workflow",
+      "source": "project",
+      "protocol": "execution",
+      "name": "Game Testing Workflow 执行模式",
+      "description": "执行模式，定义具体的行为模式",
+      "reference": "@project://.promptx/resource/role/game-testing-expert/execution/game-testing-workflow.execution.md",
+      "metadata": {
+        "createdAt": "2025-07-31T03:43:23.166Z",
+        "updatedAt": "2025-07-31T03:43:23.166Z",
+        "scannedAt": "2025-07-31T03:43:23.166Z",
+        "path": "role/game-testing-expert/execution/game-testing-workflow.execution.md"
+      }
+    },
+    {
+      "id": "game-testing-expert",
+      "source": "project",
+      "protocol": "role",
+      "name": "Game Testing Expert 角色",
+      "description": "专业角色，提供特定领域的专业能力",
+      "reference": "@project://.promptx/resource/role/game-testing-expert/game-testing-expert.role.md",
+      "metadata": {
+        "createdAt": "2025-07-31T03:43:23.166Z",
+        "updatedAt": "2025-07-31T03:43:23.166Z",
+        "scannedAt": "2025-07-31T03:43:23.166Z",
+        "path": "role/game-testing-expert/game-testing-expert.role.md"
+      }
+    },
+    {
+      "id": "performance-testing-metrics",
+      "source": "project",
+      "protocol": "knowledge",
+      "name": "Performance Testing Metrics 知识库",
+      "description": "知识库，提供专业知识和信息",
+      "reference": "@project://.promptx/resource/role/game-testing-expert/knowledge/performance-testing-metrics.knowledge.md",
+      "metadata": {
+        "createdAt": "2025-07-31T03:43:23.166Z",
+        "updatedAt": "2025-07-31T03:43:23.166Z",
+        "scannedAt": "2025-07-31T03:43:23.166Z",
+        "path": "role/game-testing-expert/knowledge/performance-testing-metrics.knowledge.md"
+      }
+    },
+    {
+      "id": "web-game-testing-techniques",
+      "source": "project",
+      "protocol": "knowledge",
+      "name": "Web Game Testing Techniques 知识库",
+      "description": "知识库，提供专业知识和信息",
+      "reference": "@project://.promptx/resource/role/game-testing-expert/knowledge/web-game-testing-techniques.knowledge.md",
+      "metadata": {
+        "createdAt": "2025-07-31T03:43:23.167Z",
+        "updatedAt": "2025-07-31T03:43:23.167Z",
+        "scannedAt": "2025-07-31T03:43:23.167Z",
+        "path": "role/game-testing-expert/knowledge/web-game-testing-techniques.knowledge.md"
+      }
+    },
+    {
+      "id": "game-testing-methodology",
+      "source": "project",
+      "protocol": "thought",
+      "name": "Game Testing Methodology 思维模式",
+      "description": "思维模式，指导AI的思考方式",
+      "reference": "@project://.promptx/resource/role/game-testing-expert/thought/game-testing-methodology.thought.md",
+      "metadata": {
+        "createdAt": "2025-07-31T03:43:23.167Z",
+        "updatedAt": "2025-07-31T03:43:23.167Z",
+        "scannedAt": "2025-07-31T03:43:23.167Z",
+        "path": "role/game-testing-expert/thought/game-testing-methodology.thought.md"
+      }
+    },
+    {
+      "id": "k12-game-design-workflow",
+      "source": "project",
+      "protocol": "execution",
+      "name": "K12 Game Design Workflow 执行模式",
+      "description": "执行模式，定义具体的行为模式",
+      "reference": "@project://.promptx/resource/role/k12-game-designer/execution/k12-game-design-workflow.execution.md",
+      "metadata": {
+        "createdAt": "2025-07-31T03:43:23.167Z",
+        "updatedAt": "2025-07-31T03:43:23.167Z",
+        "scannedAt": "2025-07-31T03:43:23.167Z",
+        "path": "role/k12-game-designer/execution/k12-game-design-workflow.execution.md"
+      }
+    },
+    {
+      "id": "k12-game-designer",
+      "source": "project",
+      "protocol": "role",
+      "name": "K12 Game Designer 角色",
+      "description": "专业角色，提供特定领域的专业能力",
+      "reference": "@project://.promptx/resource/role/k12-game-designer/k12-game-designer.role.md",
+      "metadata": {
+        "createdAt": "2025-07-31T03:43:23.168Z",
+        "updatedAt": "2025-07-31T03:43:23.168Z",
+        "scannedAt": "2025-07-31T03:43:23.168Z",
+        "path": "role/k12-game-designer/k12-game-designer.role.md"
+      }
+    },
+    {
+      "id": "game-mechanics-education-mapping",
+      "source": "project",
+      "protocol": "knowledge",
+      "name": "Game Mechanics Education Mapping 知识库",
+      "description": "知识库，提供专业知识和信息",
+      "reference": "@project://.promptx/resource/role/k12-game-designer/knowledge/game-mechanics-education-mapping.knowledge.md",
+      "metadata": {
+        "createdAt": "2025-07-31T03:43:23.168Z",
+        "updatedAt": "2025-07-31T03:43:23.168Z",
+        "scannedAt": "2025-07-31T03:43:23.168Z",
+        "path": "role/k12-game-designer/knowledge/game-mechanics-education-mapping.knowledge.md"
+      }
+    },
+    {
+      "id": "k12-educational-design",
+      "source": "project",
+      "protocol": "thought",
+      "name": "K12 Educational Design 思维模式",
+      "description": "思维模式，指导AI的思考方式",
+      "reference": "@project://.promptx/resource/role/k12-game-designer/thought/k12-educational-design.thought.md",
+      "metadata": {
+        "createdAt": "2025-07-31T03:43:23.168Z",
+        "updatedAt": "2025-07-31T03:43:23.168Z",
+        "scannedAt": "2025-07-31T03:43:23.168Z",
+        "path": "role/k12-game-designer/thought/k12-educational-design.thought.md"
+      }
+    },
+    {
+      "id": "tower-defense-development",
+      "source": "project",
+      "protocol": "execution",
+      "name": "Tower Defense Development 执行模式",
+      "description": "执行模式，定义具体的行为模式",
+      "reference": "@project://.promptx/resource/role/tower-defense-expert/execution/tower-defense-development.execution.md",
+      "metadata": {
+        "createdAt": "2025-07-31T03:43:23.169Z",
+        "updatedAt": "2025-07-31T03:43:23.169Z",
+        "scannedAt": "2025-07-31T03:43:23.169Z",
+        "path": "role/tower-defense-expert/execution/tower-defense-development.execution.md"
+      }
+    },
+    {
+      "id": "tower-defense-thinking",
+      "source": "project",
+      "protocol": "thought",
+      "name": "Tower Defense Thinking 思维模式",
+      "description": "思维模式，指导AI的思考方式",
+      "reference": "@project://.promptx/resource/role/tower-defense-expert/thought/tower-defense-thinking.thought.md",
+      "metadata": {
+        "createdAt": "2025-07-31T03:43:23.169Z",
+        "updatedAt": "2025-07-31T03:43:23.169Z",
+        "scannedAt": "2025-07-31T03:43:23.169Z",
+        "path": "role/tower-defense-expert/thought/tower-defense-thinking.thought.md"
+      }
+    },
+    {
+      "id": "tower-defense-expert",
+      "source": "project",
+      "protocol": "role",
+      "name": "Tower Defense Expert 角色",
+      "description": "专业角色，提供特定领域的专业能力",
+      "reference": "@project://.promptx/resource/role/tower-defense-expert/tower-defense-expert.role.md",
+      "metadata": {
+        "createdAt": "2025-07-31T03:43:23.169Z",
+        "updatedAt": "2025-07-31T03:43:23.169Z",
+        "scannedAt": "2025-07-31T03:43:23.169Z",
+        "path": "role/tower-defense-expert/tower-defense-expert.role.md"
+      }
+    },
+    {
+      "id": "web-game-dev-workflow",
+      "source": "project",
+      "protocol": "execution",
+      "name": "Web Game Dev Workflow 执行模式",
+      "description": "执行模式，定义具体的行为模式",
+      "reference": "@project://.promptx/resource/role/web-game-developer/execution/web-game-dev-workflow.execution.md",
+      "metadata": {
+        "createdAt": "2025-07-31T03:43:23.170Z",
+        "updatedAt": "2025-07-31T03:43:23.170Z",
+        "scannedAt": "2025-07-31T03:43:23.170Z",
+        "path": "role/web-game-developer/execution/web-game-dev-workflow.execution.md"
+      }
+    },
+    {
+      "id": "classic-game-algorithms",
+      "source": "project",
+      "protocol": "knowledge",
+      "name": "Classic Game Algorithms 知识库",
+      "description": "知识库，提供专业知识和信息",
+      "reference": "@project://.promptx/resource/role/web-game-developer/knowledge/classic-game-algorithms.knowledge.md",
+      "metadata": {
+        "createdAt": "2025-07-31T03:43:23.170Z",
+        "updatedAt": "2025-07-31T03:43:23.170Z",
+        "scannedAt": "2025-07-31T03:43:23.170Z",
+        "path": "role/web-game-developer/knowledge/classic-game-algorithms.knowledge.md"
+      }
+    },
+    {
+      "id": "web-game-tech-stack",
+      "source": "project",
+      "protocol": "knowledge",
+      "name": "Web Game Tech Stack 知识库",
+      "description": "知识库，提供专业知识和信息",
+      "reference": "@project://.promptx/resource/role/web-game-developer/knowledge/web-game-tech-stack.knowledge.md",
+      "metadata": {
+        "createdAt": "2025-07-31T03:43:23.170Z",
+        "updatedAt": "2025-07-31T03:43:23.170Z",
+        "scannedAt": "2025-07-31T03:43:23.170Z",
+        "path": "role/web-game-developer/knowledge/web-game-tech-stack.knowledge.md"
+      }
+    },
+    {
+      "id": "web-game-development",
+      "source": "project",
+      "protocol": "thought",
+      "name": "Web Game Development 思维模式",
+      "description": "思维模式，指导AI的思考方式",
+      "reference": "@project://.promptx/resource/role/web-game-developer/thought/web-game-development.thought.md",
+      "metadata": {
+        "createdAt": "2025-07-31T03:43:23.171Z",
+        "updatedAt": "2025-07-31T03:43:23.171Z",
+        "scannedAt": "2025-07-31T03:43:23.171Z",
+        "path": "role/web-game-developer/thought/web-game-development.thought.md"
+      }
+    },
+    {
+      "id": "web-game-developer",
+      "source": "project",
+      "protocol": "role",
+      "name": "Web Game Developer 角色",
+      "description": "专业角色，提供特定领域的专业能力",
+      "reference": "@project://.promptx/resource/role/web-game-developer/web-game-developer.role.md",
+      "metadata": {
+        "createdAt": "2025-07-31T03:43:23.171Z",
+        "updatedAt": "2025-07-31T03:43:23.171Z",
+        "scannedAt": "2025-07-31T03:43:23.171Z",
+        "path": "role/web-game-developer/web-game-developer.role.md"
+      }
+    }
+  ],
+  "stats": {
+    "totalResources": 21,
+    "byProtocol": {
+      "role": 5,
+      "execution": 5,
+      "knowledge": 6,
+      "thought": 5
+    },
+    "bySource": {
+      "project": 21
+    }
+  }
+}
