@@ -222,7 +222,7 @@ export class Preloader extends Scene {
     }
 
     create() {
-        // 启动游戏场景
-        this.scene.start('GameScene');
+        // 启动首页场景
+        this.scene.start('Homepage');
     }
 }

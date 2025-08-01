@@ -1,6 +1,8 @@
 import { Boot } from './scenes/Boot';
 import { Game as MainGame } from './scenes/GameScene';
 import { UIScene } from './scenes/UIScene';
+import { Homepage } from './scenes/Homepage';
+import { LevelSelection } from './scenes/LevelSelection';
 import { AUTO, Game } from 'phaser';
 import { Preloader } from './scenes/Preloader';
 
@@ -26,6 +28,8 @@ const config: Phaser.Types.Core.GameConfig = {
     scene: [
         Boot,
         Preloader,
+        Homepage,
+        LevelSelection,
         MainGame,
         UIScene
     ]
