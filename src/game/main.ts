@@ -5,6 +5,7 @@ import { Homepage } from './scenes/Homepage';
 import { LevelSelection } from './scenes/LevelSelection';
 import { AUTO, Game } from 'phaser';
 import { Preloader } from './scenes/Preloader';
+import { CodexScene } from './scenes/CodexScene';
 
 //  Find out more information about the Game Config at:
 //  https://docs.phaser.io/api-documentation/typedef/types-core#gameconfig
@@ -31,7 +32,8 @@ const config: Phaser.Types.Core.GameConfig = {
         Homepage,
         LevelSelection,
         MainGame,
-        UIScene
+        UIScene,
+        CodexScene
     ]
 };
 

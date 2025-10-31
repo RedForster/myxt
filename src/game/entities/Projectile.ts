@@ -8,7 +8,10 @@ export class Projectile extends Phaser.Physics.Arcade.Sprite {
     private speed: number;
     private damage: number;
     private target: Phaser.GameObjects.GameObject | null;
-    private isEnemyProjectile: boolean = false; // 标记是否为敌人发射的子弹
+    public isEnemyProjectile: boolean = false; // 标记是否为敌人发射的子弹
+    private originX: number; // 发射起点X坐标
+    private originY: number; // 发射起点Y坐标
+    private maxRange: number = 0; // 最大射程，超过后子弹消失
 
     constructor(scene: Scene, x: number, y: number) {
         super(scene, x, y, 'projectile');
@@ -31,12 +34,20 @@ export class Projectile extends Phaser.Physics.Arcade.Sprite {
      * @param damage 伤害值
      * @param speed 射弹速度
      * @param isEnemyProjectile 是否为敌人发射的子弹
+     * @param range 射程范围，仅对敌人子弹生效
      */
-    public fire(target: Phaser.GameObjects.GameObject, damage: number, speed: number = 1200, isEnemyProjectile: boolean = false): void {
+    public fire(target: Phaser.GameObjects.GameObject, damage: number, speed: number = 1200, isEnemyProjectile: boolean = false, range: number = 0): void {
         this.target = target;
         this.damage = damage;
         this.speed = speed;
         this.isEnemyProjectile = isEnemyProjectile;
+        
+        // 记录发射起点坐标
+        this.originX = this.x;
+        this.originY = this.y;
+        
+        // 设置最大射程 - 所有的子弹都有射程限制
+        this.maxRange = range > 0 ? range : 0;
         
         this.setActive(true);
         this.setVisible(true);
@@ -50,10 +61,12 @@ export class Projectile extends Phaser.Physics.Arcade.Sprite {
         
         // 设置碰撞体
         const body = this.body as Phaser.Physics.Arcade.Body;
-        body.setCircle(this.width / 4);  // 减小碰撞体积以提高精确度
+        const collisionRadius = Math.max(this.width / 2, 8); // 增大碰撞体积
+        body.setCircle(collisionRadius);
         body.setEnable(true);  // 确保物理体已启用
         body.setBounce(0);     // 禁止反弹
         body.setAllowGravity(false);  // 禁用重力
+        
         
         // 朝目标移动
         this.scene.physics.moveToObject(this, target, this.speed);
@@ -81,6 +94,19 @@ export class Projectile extends Phaser.Physics.Arcade.Sprite {
         if (this.y < -50 || this.y > height + 50 || 
             this.x < -50 || this.x > width + 50) {
             this.recycleProjectile();
+            return;
+        }
+        
+        // 检查子弹是否超出最大射程
+        if (this.maxRange > 0) {
+            const distanceFromOrigin = Phaser.Math.Distance.Between(
+                this.x, this.y,
+                this.originX, this.originY
+            );
+            
+            if (distanceFromOrigin > this.maxRange) {
+                this.recycleProjectile();
+            }
         }
     }
 

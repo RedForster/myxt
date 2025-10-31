@@ -17,10 +17,13 @@ export interface TowerConfig {
     hp: number;
     damage: number;
     range: number;
+    detectionRange: number; // 敌人检测范围，用于锁定敌人
     fireRate: number;
     projectileSpeed: number;
     attractionSlots: number;
     deployCount?: number; // 部署数量，默认为1
+    canMove?: boolean; // 是否可以移动
+    moveSpeed?: number; // 移动速度（像素/秒）
     icon: IconConfig;
 }
 
@@ -64,11 +67,14 @@ export const UNITS_CONFIG = {
             cost: 15,
             hp: 30,
             damage: 15,
-            range: 144 * 0.8, // 0.8个单位 = 115px
+            range: 144 * 1.5, 
+            detectionRange: 144 * 10, // 检测范围比攻击范围大
             fireRate: 800, // 0.8秒/次
             projectileSpeed: 1200,
             attractionSlots: 3,
             deployCount: 3, // 部署3个塔
+            canMove: true,
+            moveSpeed: 120, // 120像素/秒
             icon: {
                 emoji: '🩸',
                 bgColor: 0x3498db,
@@ -84,10 +90,13 @@ export const UNITS_CONFIG = {
             cost: 20,
             hp: 50,
             damage: 30,
-            range: 144 * 5, // 5个单位 = 720px
+            range: 144 * 3, // 5个单位 = 720px
+            detectionRange: 144 * 10, // 检测范围比攻击范围大
             fireRate: 600, // 0.6秒/次
             projectileSpeed: 1200,
             attractionSlots: 3,
+            canMove: true,
+            moveSpeed: 100, // 100像素/秒
             icon: {
                 emoji: '🔬',
                 bgColor: 0x9b59b6,
@@ -104,9 +113,12 @@ export const UNITS_CONFIG = {
             hp: 80,
             damage: 20,
             range: 144 * 6, // 6个单位 = 864px
+            detectionRange: 144 * 8, // 检测范围比攻击范围大
             fireRate: 300, // 0.3秒/次
             projectileSpeed: 1500,
             attractionSlots: 3,
+            canMove: true,
+            moveSpeed: 150, // 150像素/秒
             icon: {
                 emoji: '🛡️',
                 bgColor: 0xe74c3c,
@@ -123,9 +135,12 @@ export const UNITS_CONFIG = {
             hp: 150,
             damage: 80,
             range: 144 * 7, // 7个单位 = 1008px
+            detectionRange: 144 * 9, // 检测范围比攻击范围大
             fireRate: 1000, // 1.0秒/次
             projectileSpeed: 1000,
             attractionSlots: 3,
+            canMove: true,
+            moveSpeed: 80, // 80像素/秒
             icon: {
                 emoji: '🦠',
                 bgColor: 0xf1c40f,
@@ -144,7 +159,7 @@ export const UNITS_CONFIG = {
             speed: 80 * 144 / 1000, // 80单位/秒转换为像素/ms
             reward: 5,
             damage: 15,
-            attackRange: 150, // 增加攻击范围，原来的50可能太小
+            attackRange: 144*1.5, // 增加攻击范围，原来的50可能太小
             fireRate: 1000,
             damageToPlayer: 15,
             targetedBySlots: 3,
@@ -186,6 +201,16 @@ export const UNITS_CONFIG = {
             icon: {
                 emoji: '🤧',
                 bgColor: 0x1abc9c,
+                size: 96
+            }
+        },
+        codex: {
+            id: 'codex',
+            name: '图鉴',
+            texture: 'icon_codex',
+            icon: {
+                emoji: '📚',
+                bgColor: 0x2980b9,
                 size: 96
             }
         }

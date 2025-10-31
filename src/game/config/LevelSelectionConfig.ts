@@ -35,7 +35,7 @@ export const LEVEL_SELECTION_CONFIGS: LevelSelectionConfig[] = [
         name: '第一关',
         title: '初级防御',
         description: '学习基础防御策略，抵御第一批入侵的细菌。只有中性粒细胞可用。',
-        previewImage: 'level_preview_1',
+        previewImage: 'level1_background',
         difficulty: 'easy',
         unlocked: true,
         completed: false,
@@ -76,7 +76,7 @@ export const LEVEL_SELECTION_CONFIGS: LevelSelectionConfig[] = [
         id: 'level_3',
         name: '第三关',
         title: '免疫强化',
-        description: 'T细胞加入战斗！它们的特殊 targeting 系统能更有效地消灭敌人。',
+        description: 'T细胞加入战斗！它们的特殊targeting系统能更有效地消灭敌人。',
         previewImage: 'level_preview_3',
         difficulty: 'medium',
         unlocked: false,
@@ -238,7 +238,6 @@ export class LevelSelectionManager {
             };
             localStorage.setItem('immune_td_level_selection_progress', JSON.stringify(progress));
         } catch (error) {
-            console.warn('无法保存游戏进度:', error);
         }
     }
 
@@ -260,7 +259,6 @@ export class LevelSelectionManager {
                 });
             }
         } catch (error) {
-            console.warn('无法加载游戏进度:', error);
         }
     }
 }

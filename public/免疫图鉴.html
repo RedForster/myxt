@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<title>免疫图鉴</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<style>
+ /* =========== Global Reset & Base =========== */
+ * { box-sizing: border-box; margin:0; padding:0; }
+ html,body { width:100%; overflow:auto; }
+ body { background:#000; font-family:'Alibaba PuHuiTi','Microsoft YaHei',sans-serif; color:#fff; }
+ a,img { user-select:none; -webkit-user-drag:none; }
+
+ /* =========== Layout Helpers =========== */
+ .stage-wrapper { width:2048px; height:1556px; margin:0 auto; overflow:hidden; position:relative; }
+ .stage { position:relative; width:4096px; height:3112px; background:#000; overflow:hidden; transform:scale(0.5); transform-origin:top left; }
+ .abs { position:absolute; }
+ .flex { display:flex; }
+ .flex-col { flex-direction:column; }
+ .flex-row { flex-direction:row; }
+ .center { justify-content:center; align-items:center; }
+ .no-wrap { white-space:nowrap; }
+ .return-button {
+            width: 236px;
+            height: 109px;
+            border: 1px solid #ccc;
+            margin-top: 123.47px;
+            margin-left: 1352px;
+            position: relative;
+            background-image: url('assets/button.svg');
+        }
+        
+ .return-text {
+    width: 210px;
+    height: 68px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 16.53px;
+    left: 11px;
+}
+
+ .return-label {
+    width: 130px;
+    font-size: 30px;
+    white-space: nowrap;
+    text-align: center;
+    color: rgba(50,50,50,1);
+    line-height: 46px;
+    font-weight: bold;
+}
+.bottom-section {
+  position: absolute;
+  bottom: 16px; /* distance from bottom of canvas */
+  left: 85px; /* align with original left margin */
+  width: 1858px;
+  height: 232.47px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+ /* =========== Typography =========== */
+ .panel-title { font-size:136px; color:rgba(50,37,139,1); font-weight:700; }
+ .chip-title { font-size:96px; font-weight:700; }
+ .chip-immune { color:rgba(144,59,23,1); }
+ .chip-virus, .chip-route { color:rgba(30,64,174,1); }
+ .card-unit-name { font-size:96px; font-weight:700; color:rgba(67,76,166,1); }
+ .attr-label { font-size:40px; font-weight:700; color:rgba(81,93,209,1); white-space:nowrap; }
+ .section-label { font-size:60px; font-weight:700; color:rgba(81,93,209,1); }
+ .section-desc { font-size:60px; font-weight:700; color:rgba(110,110,110,1); }
+ .return-text { font-size:60px; line-height:92px; font-weight:700; color:rgba(50,50,50,1); }
+
+ /* =========== Components =========== */
+ /* Chips: one active style, one inactive style */
+ .chip { width:892px; height:278px; display:flex; background-size:100% 100%; background-repeat:no-repeat; }
+ .chip--active { background-image:url('assets/chip-active.png'); }
+ .chip--inactive { background-image:url('assets/chip-inactive.png'); }
+ .chip > img { flex-shrink:0; }
+ .chip .chip-title { display:flex; align-items:flex-start; }
+
+ /* Attribute pill (unified background) */
+ .attr-bg { width:268px; height:64px; display:flex; background:url('assets/attr-bg.png') no-repeat 0 0 / 100% 100%; }
+
+ /* Section header (unified background) */
+ .section-bg { width:396px; height:102px; display:flex; justify-content:center; align-items:flex-end; background:url('assets/section-bg.png') no-repeat 0 0 / 100% 100%; }
+
+ /* Character image wrapper (统一角色底图) */
+ .character-holder { width:680px; height:442px; display:flex; justify-content:center; align-items:center; background:url('assets/character_image_bg.png') no-repeat center / 100% 100%; position:relative; }
+ .character-holder img { max-width:100%; max-height:100%; object-fit:contain; }
+
+ /* Card container background (unified) */
+ .card-panel { background:url('assets/card-panel.png') no-repeat 0 0 / 100% 100%; }
+ .cards-area { background:url('assets/bg-cards-area.png') no-repeat 0 0 / 100% 100%; }
+ .page-bg { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+</style>
+</head>
+<body>
+  <div class="stage-wrapper">
+  <div class="stage">  
+
+    <!-- 顶部主区域背景 + 标题与分类 chips -->
+    <div class="abs" style="top:428px; left:254px; width:3642px; height:2338px;">
+      <div class="abs" style="top:0; left:0; width:3636px; height:2338px;">
+        <img src="assets/bg-canvas.png" class="page-bg" alt="页面背景" />
+        <div class="panel-title abs" style="top:74px; left:422px;">免疫图鉴</div>
+        <!-- 分类 Chips -->
+        <div class="abs chip chip--active" style="top:114px; left:1056px;">
+          <img src="assets/icon-immune.png" style="width:79.30px; height:90.68px; margin-top:58px; margin-left:176px;" alt="免疫系统图标" />
+          <div class="chip-title chip-immune" style="margin-top:34px; margin-left:38.70px; width:484px;">免疫系统</div>
+        </div>
+        <div class="abs chip chip--inactive" style="top:114px; left:1834px;">
+          <img src="assets/icon-virus.png" style="width:101.54px; height:100px; margin-top:58px; margin-left:288px;" alt="病毒图标" />
+          <div class="chip-title chip-virus" style="margin-top:34px; margin-left:36px; width:192px;">病毒</div>
+        </div>
+        <div class="abs chip chip--inactive" style="top:114px; left:2626px;">
+          <img src="assets/icon-route.png" style="width:94.36px; height:82.90px; margin-top:58px; margin-left:192px;" alt="免疫路线图标" />
+          <div class="chip-title chip-route" style="margin-top:34px; margin-left:23.64px; width:382px;">免疫路线</div>
+        </div>
+      </div>
+
+      <!-- 卡片区域背景容器 -->
+    <div class="abs flex" style="top:274px; left:154px; width:3488px; height:1972px; justify-content:center; align-items:center;">
+    <div class="cards-area" style="display:flex; width:3488px; height:1972px;">
+          <!-- 左侧卡片 1 -->
+      <div class="flex center" style="margin-top:180px; margin-left:200px; width:1446px; height:1614px;">
+    <div class="flex flex-col card-panel" style="width:1446px; height:1614px;">
+              <div class="card-unit-name" style="margin-top:132px; margin-left:194px; width:766px;">嗜中性白血球</div>
+              <div style="display:flex; margin-top:78px; margin-left:132px; width:1112px; height:442px;">
+                <div class="character-holder">
+                  <img src="assets/character_image.png" alt="嗜中性白血球 A" />
+                </div>
+                <div style="margin-top:36px; margin-left:32px; width:400px; height:360px; display:flex; flex-direction:column;">
+                  <!-- 属性1 -->
+                  <div style="display:flex; margin-left:6px; width:394px; height:100px;">
+          <img src="assets/icon-resource.png" style="width:94px; height:100px;" alt="资源消耗图标" />
+          <div class="attr-bg" style="margin-top:14px; margin-left:32px;">
+                      <div class="attr-label" style="margin-top:4px; margin-left:22px;">消耗资源 50</div>
+                    </div>
+                  </div>
+                  <!-- 属性2 -->
+                  <div style="display:flex; margin-top:44px; width:400px; height:94px;">
+          <img src="assets/icon-hp.png" style="width:108px; height:94px;" alt="生命值图标" />
+          <div class="attr-bg" style="margin-top:4px; margin-left:24px;">
+                      <div class="attr-label" style="margin-top:4px; margin-left:22px;">生命值 50</div>
+                    </div>
+                  </div>
+                  <!-- 属性3 -->
+                  <div style="display:flex; margin-top:24px; margin-left:10px; width:390px; height:98px;">
+          <img src="assets/icon-attack.png" style="width:86px; height:98px;" alt="攻击力图标" />
+          <div class="attr-bg" style="margin-top:20px; margin-left:36px;">
+                      <div class="attr-label" style="margin-top:4px; margin-left:22px;">攻击力 50</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- 技能 -->
+              <div style="display:flex; flex-direction:column; margin-top:108px; margin-left:176px; width:546px; height:208px;">
+        <div class="section-bg"><div class="section-label" style="margin-bottom:4px;">技能</div></div>
+                <div class="section-desc" style="margin-top:24px; margin-left:4px; width:542px; white-space:nowrap;">demo版本暂无技能</div>
+              </div>
+              <!-- 角色描述 -->
+              <div style="display:flex; flex-direction:column; margin-top:28px; margin-left:176px; width:1084px; height:310px;">
+        <div class="section-bg"><div class="section-label" style="margin-bottom:4px;">角色描述</div></div>
+                <div class="section-desc" style="margin-top:44px; margin-left:4px; width:1080px;">嗜中性白血球是优秀的前线战士兵，适合 对抗中小型病原体。</div>
+              </div>
+            </div>
+          </div>
+          <!-- 右侧卡片 2 -->
+      <div class="flex center" style="margin-top:180px; margin-left:98px; width:1446px; height:1614px;">
+    <div class="flex flex-col card-panel" style="width:1446px; height:1614px;">
+              <div class="card-unit-name" style="margin-top:132px; margin-left:194px; width:766px;">嗜中性白血球</div>
+              <div style="display:flex; margin-top:78px; margin-left:132px; width:1112px; height:442px;">
+                <div class="character-holder">
+                  <img src="assets/character_image.png" alt="嗜中性白血球 B" />
+                </div>
+                <div style="margin-top:36px; margin-left:32px; width:400px; height:360px; display:flex; flex-direction:column;">
+                  <!-- 属性1 -->
+                  <div style="display:flex; margin-left:6px; width:394px; height:100px;">
+          <img src="assets/icon-resource.png" style="width:94px; height:100px;" alt="资源消耗图标" />
+          <div class="attr-bg" style="margin-top:14px; margin-left:32px;">
+                      <div class="attr-label" style="margin-top:4px; margin-left:22px;">消耗资源 50</div>
+                    </div>
+                  </div>
+                  <!-- 属性2 -->
+                  <div style="display:flex; margin-top:44px; width:400px; height:94px;">
+          <img src="assets/icon-hp.png" style="width:108px; height:94px;" alt="生命值图标" />
+          <div class="attr-bg" style="margin-top:4px; margin-left:24px;">
+                      <div class="attr-label" style="margin-top:4px; margin-left:22px;">生命值 50</div>
+                    </div>
+                  </div>
+                  <!-- 属性3 -->
+                  <div style="display:flex; margin-top:24px; margin-left:10px; width:390px; height:98px;">
+          <img src="assets/icon-attack.png" style="width:86px; height:98px;" alt="攻击力图标" />
+          <div class="attr-bg" style="margin-top:20px; margin-left:36px;">
+                      <div class="attr-label" style="margin-top:4px; margin-left:22px;">攻击力 50</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- 技能 -->
+              <div style="display:flex; flex-direction:column; margin-top:108px; margin-left:176px; width:546px; height:208px;">
+        <div class="section-bg"><div class="section-label" style="margin-bottom:4px;">技能</div></div>
+                <div class="section-desc" style="margin-top:24px; margin-left:4px; width:542px; white-space:nowrap;">demo版本暂无技能</div>
+              </div>
+              <!-- 角色描述 -->
+              <div style="display:flex; flex-direction:column; margin-top:28px; margin-left:176px; width:1084px; height:310px;">
+        <div class="section-bg"><div class="section-label" style="margin-bottom:4px;">角色描述</div></div>
+                <div class="section-desc" style="margin-top:44px; margin-left:4px; width:1080px;">嗜中性白血球是优秀的前线战士兵，适合 对抗中小型病原体。</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <!-- 返回按钮组 -->
+    <div class="bottom-section">
+        <div class="return-button">
+                <div class="return-text">
+                    <div class="return-label">返回</div>                    
+                </div>                    
+        </div>
+    </div>
+  </div>
+  </div>
+</body>
+</html>

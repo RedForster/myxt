@@ -1,0 +1,27 @@
+{
+  "mcpServers": {
+    "smithery-ai-server-sequential-thinking": {
+      "type": "http",
+      "url": "https://server.smithery.ai/@smithery-ai/server-sequential-thinking/mcp?api_key=a2011efe-81df-49e6-9fb6-bb1cb25eb7be&profile=collective-mole-UwMkKT"
+    },
+    "upstash-context-7-mcp": {
+      "type": "http",
+      "url": "https://server.smithery.ai/@upstash/context7-mcp/mcp?api_key=a2011efe-81df-49e6-9fb6-bb1cb25eb7be&profile=collective-mole-UwMkKT"
+    },
+    "smithery-ai-puppeteer": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@smithery/cli@latest",
+        "run",
+        "@smithery-ai/puppeteer",
+        "--profile",
+        "collective-mole-UwMkKT",
+        "--key",
+        "a2011efe-81df-49e6-9fb6-bb1cb25eb7be"
+      ],
+      "env": {}
+    }
+  }
+}
